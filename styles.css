@@ -48,3 +48,42 @@ footer {
 p {
     line-height: 1.6;
 }
+
+/* Add these to improve your CSS */
+
+h2 {
+    color: #0b60cf;
+    margin-bottom: 15px;
+}
+
+h3 {
+    color: #478eea;
+    margin-bottom: 15px;
+}
+ul, ol {
+    margin: 20px 0;
+    padding-left: 25px;
+}
+
+li {
+    margin-bottom: 10px;
+}
+
+a {
+    color: #004aad;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: #0066cc;
+}
+
+.contact-link {
+    display: inline-block;
+    background-color: #004aad;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    margin: 5px;
+}
