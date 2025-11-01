@@ -8,20 +8,18 @@ socialMedia.then(function(data) {
         d.Likes = +d.Likes;
     });
 
-
     // Define the dimensions and margins for the SVG
     const margin = {top: 40, right: 40, bottom: 40, left: 40};
     const width = 800 - margin.left - margin.right;
     const height = 500 - margin.top - margin.bottom;
 
     // Create the SVG container
-    const svg = d3.select("boxplot")
+    const svg = d3.select("#boxplot")
         .append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
-
 
     // Set up scales for x and y axes
     // You can use the range 0 to 1000 for the number of Likes, or if you want, you can use
@@ -30,8 +28,7 @@ socialMedia.then(function(data) {
     // For the domain of the xscale, you can list all three age groups or use
     // [...new Set(data.map(d => d.AgeGroup))] to achieve a unique list of the age group
     
-
-    // Add scales     
+    // Add scales
     // Set up scales for x and y axes
     const xScale = d3.scaleBand()
         .domain([...new Set(data.map(d => d.AgeGroup))])
@@ -70,22 +67,19 @@ socialMedia.then(function(data) {
         .attr("text-anchor", "middle")
         .text("Number of Likes");
 
-    
     // Rollup function to calculate quantiles for each group
     const rollupFunction = function(groupData) {
         const values = groupData.map(d => d.Likes).sort(d3.ascending);
-        const min = d3.min(values); 
         const q1 = d3.quantile(values, 0.25);
         const median = d3.quantile(values, 0.5);
         const q3 = d3.quantile(values, 0.75);
         const iqr = q3 - q1;
 
-      // Define whiskers ignoring outliers
-      const min = Math.max(d3.min(values), q1 - 1.5 * iqr);
-      const max = Math.min(d3.max(values), q3 + 1.5 * iqr);
+        // Define whiskers ignoring outliers
+        const min = Math.max(d3.min(values), q1 - 1.5 * iqr);
+        const max = Math.min(d3.max(values), q3 + 1.5 * iqr);
 
-      return { q1, median, q3, min, max };
-  };
+        return { q1, median, q3, min, max };
     };
 
     // This line groups the data by AgeGroup and applies the rollupFunction to each group and 
@@ -94,7 +88,7 @@ socialMedia.then(function(data) {
 
     // This iterates through each group in the Map For each iteration, 'quantiles' contains 
     // the calculated statistics (min, q1, median, q3, max) and 'AgeGroup' contains the group 
-    // name 
+    // name     
     quantilesByGroups.forEach((quantiles, AgeGroup) => {
         const x = xScale(AgeGroup);
         const boxWidth = xScale.bandwidth();
@@ -105,7 +99,7 @@ socialMedia.then(function(data) {
             .attr("x2", x + boxWidth / 2)
             .attr("y1", yScale(quantiles.min))
             .attr("y2", yScale(quantiles.max))
-            .attr("stroke", "black")
+            .attr("stroke", "black");
 
         // Draw box
         svg.append("rect")
@@ -114,8 +108,7 @@ socialMedia.then(function(data) {
             .attr("width", boxWidth)
             .attr("height", yScale(quantiles.q1) - yScale(quantiles.q3))
             .attr("fill", "#69b3a2")
-            .attr("stroke", "black")
-        
+            .attr("stroke", "black");
 
         // Draw median 
         svg.append("line")
@@ -128,7 +121,7 @@ socialMedia.then(function(data) {
     });
 });
 
-// Prepare you data and load the data again. 
+// Prepare data and load the data again
 // This data should contains three columns, platform, post type and average number of likes. 
 const socialMediaAvg = d3.csv("socialMediaAvg.csv");
 
@@ -146,7 +139,7 @@ socialMediaAvg.then(function(data) {
     // Create the SVG container
     const svg = d3.select("#barplot")
         .append("svg")
-        .attr("width", width + margin.left + margin.right)
+        .attr("width", width + margin.left + margin.right + 200)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
@@ -155,8 +148,7 @@ socialMediaAvg.then(function(data) {
     // Scale x0 is for the platform, which divide the whole scale into 4 parts
     // Scale x1 is for the post type, which divide each bandwidth of the previous x0 scale into three part for each post type
     // Recommend to add more spaces for the y scale for the legend
-    // Also need a color scale for the post type
-
+    // Also need a color scale for the post type    
     const x0 = d3.scaleBand()
         .domain([...new Set(data.map(d => d.Platform))])
         .range([0, width])
@@ -172,8 +164,8 @@ socialMediaAvg.then(function(data) {
         .range([height, 0]);
 
     const color = d3.scaleOrdinal()
-      .domain([...new Set(data.map(d => d.PostType))])
-      .range(["#1f77b4", "#ff7f0e", "#2ca02c"]);    
+        .domain([...new Set(data.map(d => d.PostType))])
+        .range(["#1f77b4", "#ff7f0e", "#2ca02c"]);    
          
     // Add scales x0 and y     
     svg.append("g")
@@ -206,10 +198,10 @@ socialMediaAvg.then(function(data) {
 
     // Group container for bars
     const barGroups = svg.selectAll("bar")
-      .data(data)
-      .enter()
-      .append("g")
-      .attr("transform", d => `translate(${x0(d.Platform)},0)`);
+        .data(data)
+        .enter()
+        .append("g")
+        .attr("transform", d => `translate(${x0(d.Platform)},0)`);
     
     // Draw bars
     barGroups.append("rect")
@@ -222,12 +214,11 @@ socialMediaAvg.then(function(data) {
       
     // Add the legend
     const legend = svg.append("g")
-      .attr("transform", `translate(${width - 150}, ${margin.top})`);
+        .attr("transform", `translate(${width}, ${margin.top})`);
 
     const types = [...new Set(data.map(d => d.PostType))];
  
     types.forEach((type, i) => {
-
     // Alread have the text information for the legend. 
     // Now add a small square/rect bar next to the text with different color.
         legend.append("rect")
@@ -238,17 +229,15 @@ socialMediaAvg.then(function(data) {
             .attr("fill", color(type));
 
         legend.append("text")
-          .attr("x", 20)
-          .attr("y", i * 20 + 12)
-          .text(type)
-          .attr("alignment-baseline", "middle");
-  });
-
+            .attr("x", 20)
+            .attr("y", i * 25 + 12)
+            .text(type)
+            .attr("alignment-baseline", "middle");
+    });
 });
 
-// Prepare you data and load the data again. 
+// Prepare data and load the data again
 // This data should contains two columns, date (3/1-3/7) and average number of likes. 
-
 const socialMediaTime = d3.csv("socialMediaTime.csv");
 
 socialMediaTime.then(function(data) {
@@ -258,18 +247,17 @@ socialMediaTime.then(function(data) {
     });
 
     // Define the dimensions and margins for the SVG
-    const margin = {top: 40, right: 40, bottom: 40, left: 40};
+    const margin = {top: 40, right: 100, bottom: 80, left: 60};
     const width = 800 - margin.left - margin.right;
     const height = 500 - margin.top - margin.bottom;
 
     // Create the SVG container
     const svg = d3.select("#lineplot")
         .append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
+        .attr("width", width + margin.left + margin.right + 200)
+        .attr("height", height + margin.top + margin.bottom + 200)
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
-
 
     // Set up scales for x and y axes  
     const xScale = d3.scalePoint()
@@ -290,7 +278,7 @@ socialMediaTime.then(function(data) {
         .call(xAxis)
         .selectAll("text")
         .style("text-anchor", "end")
-        .attr("transform", "rotate(-25)"); // rotate long date labels
+        .attr("transform", "rotate(-25)");
 
     svg.append("g").call(yAxis);
 
@@ -322,7 +310,7 @@ socialMediaTime.then(function(data) {
         .attr("stroke-width", 2)
         .attr("d", line);
 
-    // Add small circles at each data point
+    // Add circles at each data point
     svg.selectAll("circle")
         .data(data)
         .enter()
